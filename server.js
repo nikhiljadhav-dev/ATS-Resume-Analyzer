@@ -234,8 +234,8 @@ const tempDir = path.join(__dirname, 'temp');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
 
-const pdfParse = require('pdf-parse');
-const mammoth = require('mammoth');
+// const pdfParse = require('pdf-parse');
+// const mammoth = require('mammoth');
 
 async function extractText(filePath) {
   const ext = path.extname(filePath).toLowerCase();
