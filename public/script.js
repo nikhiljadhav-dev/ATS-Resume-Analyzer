@@ -308,6 +308,145 @@ resetBtn.addEventListener('click', async () => {
 
 // ===================== container 1 code end ========================
 // // ===================== container 2 code start ========================
+// const uploadBox2 = document.getElementById('uploadBox2');
+// const resumeInput2 = document.getElementById('resumeInput2');
+// const uploadLabel2 = document.getElementById('uploadLabel2');
+// const findBtn = document.getElementById('findBtn');
+// const jobPostsList = document.getElementById('jobPostsList');
+// const filterSelect = document.getElementById('filterSelect');
+// const resetBtn2 = document.getElementById('resetBtn2');
+// const matchCount = document.querySelector('.total-job-post-match');
+// const filterSection = document.getElementById('filterSection'); // Updated to use ID
+
+// let allJobs = [];
+
+// uploadBox2.addEventListener('click', () => resumeInput2.click());
+
+// resumeInput2.addEventListener('change', () => {
+//   const file = resumeInput2.files[0];
+//   uploadLabel2.textContent = file ? file.name : 'Click to upload your resume';
+// });
+
+// findBtn.addEventListener('click', async () => {
+//   const file = resumeInput2.files[0];
+//   if (!file) return alert('Please upload a resume first.');
+
+//   const formData = new FormData();
+//   formData.append('resume', file);
+
+//   try {
+//     const res = await  fetch(`${BACKEND_URL}/analyze-resume`, {
+//       method: 'POST',
+//       body: formData,
+//     });
+
+//     const data = await res.json();
+//     allJobs = data.jobs || [];
+//     renderJobs(allJobs);
+
+//     // ✅ Smooth reveal of filter section with delay
+//     if (allJobs.length > 0) {
+//       setTimeout(() => {
+//         filterSection.classList.add('show');
+//       }, 300); // Delay for animation effect
+//     }
+//   } catch (err) {
+//     console.error('Error fetching jobs:', err);
+//     alert('Something went wrong. Try again.');
+//   }
+// });
+
+// function renderJobs(jobs) {
+//   jobPostsList.innerHTML = '';
+//   matchCount.textContent = `${jobs.length} Matching Jobs`;
+
+//   jobs.forEach((job) => {
+//     const li = document.createElement('li');
+//     li.className = 'job-post';
+//     li.innerHTML = `
+//       <div class="job-post-cont1">
+//         <div class="a1a">
+//          <img class="company-logo" src="${job.logo || ''}" onerror="this.onerror=null; this.src='https://yourdomain.com/default-logo.png';" />
+//           <div class="job-post-1"> 
+//             <span class="job-post-role-name">${job.role || 'N/A'}</span>
+//             <div class="job-post-1-1">
+//               <span class="Company-name">${job.company || 'N/A'}</span>
+//               <span class="location-job">${job.location || 'Remote'}</span>
+//               <span class="job-posted-time">${job.posted || 'N/A'}</span>
+//             </div>                           
+//           </div>
+//         </div> 
+//         <div class="a2a"> 
+//           <span class="match-score-job-post">${job.matchScore || 0}% Match</span>
+//           <span class="down"><i class="fa-solid fa-caret-down" id="fa-solid-8"></i></span>
+//         </div>                     
+//       </div>
+
+//       <div class="job-details hidden">
+//         <div class="sec8-1"> 
+//           <div class="sec8-1-1"> 
+//             <label class="sec8-1-1-label">Job Description</label>
+//             <div class="job-description">${job.description || 'Not available'}</div>
+//           </div>
+//           <hr class="hr">
+//           <div class="sec8-1-2"> 
+//             <label class="sec8-1-1-label">Job Requirements</label>
+//             <div class="job-post-requirements">${job.requirements || 'Not specified'}</div>
+//           </div>
+//         </div>
+//         <div class="sec8-2">           
+//           <label class="sec8-2-1 sec8-1-1-label">Contact Information</label>
+//           <div class="sec8-2-2">
+//             <span class="email-of-hiring-person"><i class="fa-solid fa-envelope"></i>${job.email || 'Not provided'}</span>
+//             <div class="sec8-2-3">
+//               <a class="job-post-apply-link" href="${job.applyLink || '#'}" target="_blank">Apply</a>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     `;
+
+//     const downArrow = li.querySelector('.down');
+//     const details = li.querySelector('.job-details');
+//     downArrow.addEventListener('click', (e) => {
+//       e.stopPropagation();
+//       details.classList.toggle('hidden');
+//       li.classList.toggle('expanded');
+//     });
+
+//     jobPostsList.appendChild(li);
+//   });
+// }
+
+// filterSelect.addEventListener('change', () => {
+//   const value = filterSelect.value;
+//   let filtered = [];
+
+//   if (value === 'high') {
+//     filtered = allJobs.filter(job => job.matchScore >= 75);
+//   } else if (value === 'medium') {
+//     filtered = allJobs.filter(job => job.matchScore >= 35 && job.matchScore < 75);
+//   } else if (value === 'low') {
+//     filtered = allJobs.filter(job => job.matchScore < 35);
+//   }
+
+//   renderJobs(filtered);
+// });
+
+// resetBtn2.addEventListener('click', () => {
+//   resumeInput2.value = '';
+//   uploadLabel2.textContent = 'Click to upload your resume';
+//   jobPostsList.innerHTML = '';
+//   matchCount.textContent = '0 Matching Jobs';
+//   filterSelect.value = '';
+//   allJobs = [];
+
+//   // ✅ Smooth hide of filter section
+//   filterSection.classList.remove('show');
+// });
+
+// // ===================== container 2 code end ========================
+
 const uploadBox2 = document.getElementById('uploadBox2');
 const resumeInput2 = document.getElementById('resumeInput2');
 const uploadLabel2 = document.getElementById('uploadLabel2');
@@ -316,7 +455,7 @@ const jobPostsList = document.getElementById('jobPostsList');
 const filterSelect = document.getElementById('filterSelect');
 const resetBtn2 = document.getElementById('resetBtn2');
 const matchCount = document.querySelector('.total-job-post-match');
-const filterSection = document.getElementById('filterSection'); // Updated to use ID
+const filterSection = document.getElementById('filterSection');
 
 let allJobs = [];
 
@@ -335,7 +474,7 @@ findBtn.addEventListener('click', async () => {
   formData.append('resume', file);
 
   try {
-    const res = await  fetch(`${BACKEND_URL}/analyze-resume`, {
+    const res = await fetch(`${BACKEND_URL}/analyze-resume`, {
       method: 'POST',
       body: formData,
     });
@@ -344,11 +483,10 @@ findBtn.addEventListener('click', async () => {
     allJobs = data.jobs || [];
     renderJobs(allJobs);
 
-    // ✅ Smooth reveal of filter section with delay
     if (allJobs.length > 0) {
       setTimeout(() => {
         filterSection.classList.add('show');
-      }, 300); // Delay for animation effect
+      }, 300);
     }
   } catch (err) {
     console.error('Error fetching jobs:', err);
@@ -366,7 +504,7 @@ function renderJobs(jobs) {
     li.innerHTML = `
       <div class="job-post-cont1">
         <div class="a1a">
-         <img class="company-logo" src="${job.logo || ''}" onerror="this.onerror=null; this.src='https://yourdomain.com/default-logo.png';" />
+          <img class="company-logo" src="${job.logo || ''}" onerror="this.onerror=null; this.src='https://yourdomain.com/default-logo.png';" />
           <div class="job-post-1"> 
             <span class="job-post-role-name">${job.role || 'N/A'}</span>
             <div class="job-post-1-1">
@@ -441,8 +579,6 @@ resetBtn2.addEventListener('click', () => {
   filterSelect.value = '';
   allJobs = [];
 
-  // ✅ Smooth hide of filter section
   filterSection.classList.remove('show');
 });
 
-// ===================== container 2 code end ========================

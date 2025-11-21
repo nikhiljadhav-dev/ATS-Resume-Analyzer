@@ -385,7 +385,107 @@ app.post('/reset', (req, res) => {
   res.status(200).send('Reset complete');
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+
+// ===================== Container 2 Endpoint ========================
+
+//Analyze resume and match jobs
+app.post('/analyze-resume', upload.single('resume'), async (req, res) => {
+  try {
+    const resumePath = req.file.path;
+    const resumeText = await extractText(resumePath);
+    const keywords = extractKeywords(resumeText);
+
+    const jobPosts = await fetchLiveJobs();
+    const scoredJobs = scoreJobs(jobPosts, keywords);
+
+    fs.unlinkSync(resumePath);
+    res.json({ jobs: scoredJobs });
+  } catch (err) {
+    console.error('Error analyzing resume:', err);
+    res.status(500).json({ error: 'Failed to analyze resume' });
+  }
 });
+
+// Resume text extraction (mocked)
+async function extractText(filePath) {
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+// Keyword extraction
+function extractKeywords(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .split(/\s+/)
+    .filter(word => word.length > 3);
+}
+
+// Added helper function to sanitize logo URLs
+function sanitizeLogo(url) {
+  const fallback = 'https://yourdomain.com/default-logo.png'; // Replace with your actual fallback logo URL
+  if (!url || typeof url !== 'string') return fallback;
+  const trimmed = url.trim();
+  if (/^https?:\/\//.test(trimmed)) return trimmed;
+  if (trimmed.startsWith('/')) return `https://remoteok.com${trimmed}`;
+  return fallback;
+}
+
+// Fetch jobs from APIs
+async function fetchLiveJobs() {
+  const arbeitnowURL = 'https://www.arbeitnow.com/api/job-board-api';
+  const remoteOkURL = 'https://remoteok.com/api';
+
+  const [arbeitRes, remoteRes] = await Promise.all([
+    axios.get(arbeitnowURL),
+    axios.get(remoteOkURL),
+  ]);
+
+  const arbeitJobs = arbeitRes.data.data.map(job => ({
+    role: job.title || 'N/A',
+    company: job.company_name || 'N/A',
+    location: job.location || 'Remote',
+    posted: job.created_at || 'N/A',
+    logo: sanitizeLogo(job.company_logo),
+    description: job.description || '',
+    requirements: job.tags?.join(', ') || '',
+    email: job.contact_email || '',
+    applyLink: job.url || '#',
+  }));
+
+  const remoteJobs = remoteRes.data
+    .filter(job => job.position && job.description)
+    .map(job => ({
+      role: job.position || 'N/A',
+      company: job.company || 'N/A',
+      location: job.location || 'Remote',
+      posted: job.date || 'N/A',
+      logo: sanitizeLogo(job.logo),
+      description: job.description || '',
+      requirements: job.tags?.join(', ') || '',
+      email: job.email || '',
+      applyLink: job.url || '#',
+    }));
+
+  return [...arbeitJobs, ...remoteJobs];
+}
+
+// Score jobs
+function scoreJobs(jobs, keywords) {
+  return jobs
+    .map(job => {
+      const matchCount = keywords.filter(k =>
+        job.description.toLowerCase().includes(k)
+      ).length;
+      const matchScore = Math.round((matchCount / keywords.length) * 100);
+      return { ...job, matchScore };
+    })
+    .filter(job => job.matchScore > 0);
+}
+
+
+
+// ===================== Start Server ========================
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+
