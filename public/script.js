@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-  
+  const BACKEND_URL = "https://ats-resume-analyzer-qqw1.onrender.com";
+
+
   const forms = [
     "signup-form", "login-form",
     "Forgot-Password-form", "OTP-Verification-form",
@@ -54,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       email: this.email.value,
       password: this.password.value
     };
-    fetch("/signup", {
+    fetch(`${BACKEND_URL}/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
@@ -73,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
       email: this.email.value,
       password: this.password.value
     };
-    fetch("/login", {
+    fetch(`${BACKEND_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ✅ Save email for later
   localStorage.setItem("resetEmail", email);
 
-  fetch("/Forgot-Password", {
+  fetch(`${BACKEND_URL}/Forgot-Password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email })
@@ -111,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("verify-otp").addEventListener("click", function (e) {
     e.preventDefault();
     const otp = document.getElementById("otp").value;
-    fetch("/OTP-Verification", {
+    fetch(`${BACKEND_URL}/OTP-Verification`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ otp })
@@ -124,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Resend OTP
   document.getElementById("resend-otp").addEventListener("click", function (e) {
     e.preventDefault();
-    fetch("/resend-otp", { method: "POST" })
+    fetch(`${BACKEND_URL}/resend-otp`, { method: "POST" })
       .then(res => res.json())
       .then(data => alert(data.success ? "OTP resent" : data.error));
   });
@@ -135,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const newPassword = this["new-password"].value;
   const email = localStorage.getItem("resetEmail"); // ✅ Pull stored email
 
-  fetch("/reset-password", {
+  fetch(`${BACKEND_URL}/reset-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ newPassword, email })
@@ -192,7 +194,7 @@ resumeInput.addEventListener('change', async (e) => {
   formData.append('resume', file);
 
   try {
-    await fetch('/upload', {
+    await fetch(`${BACKEND_URL}/upload`, {
       method: 'POST',
       body: formData,
     });
@@ -217,7 +219,7 @@ generateBtn.addEventListener('click', async () => {
   const payload = { jobDescription: jdText };
 
   try {
-    const res = await fetch('/analyze-text', {
+    const res = await fetch(`${BACKEND_URL}/analyze-text`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -290,7 +292,7 @@ function setCircularScore(percent) {
 // Reset everything
 resetBtn.addEventListener('click', async () => {
   try {
-    await fetch('/reset', { method: 'POST' });
+    await fetch(`${BACKEND_URL}/reset`, { method: 'POST' });
   } catch (err) {
     console.error('Reset failed:', err);
   }
@@ -334,7 +336,7 @@ findBtn.addEventListener('click', async () => {
   formData.append('resume', file);
 
   try {
-    const res = await fetch('/analyze-resume', {
+    const res = await fetch(`${BACKEND_URL}/analyze-resume`, {
       method: 'POST',
       body: formData,
     });

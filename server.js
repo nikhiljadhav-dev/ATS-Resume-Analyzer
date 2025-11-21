@@ -194,6 +194,8 @@ const path = require('path');
 const { spawn } = require('child_process');
 const cors = require('cors');
 const axios = require('axios');
+const pdfParse = require('pdf-parse');
+const mammoth = require('mammoth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -201,6 +203,20 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+
+
+const allowedOrigins = [
+  "https://ats-resume-analyzer-pi.vercel.app",
+  "http://localhost:3000"
+];
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(new Error("Not allowed by CORS"));
+  },
+  methods: ["GET", "POST", "OPTIONS"],
+}));
 
 // ================== DATABASE CONNECTION (Postgres) ==================
 const pool = new Pool({
@@ -217,6 +233,25 @@ const tempDir = path.join(__dirname, 'temp');
 [uploadDir, tempDir].forEach((dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 });
+
+const pdfParse = require('pdf-parse');
+const mammoth = require('mammoth');
+
+async function extractText(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === '.pdf') {
+    const dataBuffer = fs.readFileSync(filePath);
+    const result = await pdfParse(dataBuffer);
+    return result.text || '';
+  } else if (ext === '.docx') {
+    const result = await mammoth.extractRawText({ path: filePath });
+    return result.value || '';
+  } else {
+    // .doc or fallback
+    return fs.readFileSync(filePath, 'utf8'); // may fail for .doc
+  }
+}
+
 
 // Multer setup
 const storage = multer.diskStorage({
@@ -482,6 +517,13 @@ function scoreJobs(jobs, keywords) {
     .filter(job => job.matchScore > 0);
 }
 
+app.get('/healthz', (req, res) => res.status(200).send('OK'));
+const [arbeitRes, remoteRes] = await Promise.all([
+  axios.get(arbeitnowURL).catch(e => ({ data: { data: [] }, _err: e })),
+  axios.get(remoteOkURL).catch(e => ({ data: [], _err: e }))
+]);
+if (arbeitRes._err) console.error('Arbeitnow fetch error:', arbeitRes._err.message);
+if (remoteRes._err) console.error('RemoteOK fetch error:', remoteRes._err.message);
 
 
 // ===================== Start Server ========================
