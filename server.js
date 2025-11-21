@@ -470,10 +470,18 @@ async function fetchLiveJobs() {
   const arbeitnowURL = 'https://www.arbeitnow.com/api/job-board-api';
   const remoteOkURL = 'https://remoteok.com/api';
 
-  const [arbeitRes, remoteRes] = await Promise.all([
-    axios.get(arbeitnowURL),
-    axios.get(remoteOkURL),
+  // const [arbeitRes, remoteRes] = await Promise.all([
+  //   axios.get(arbeitnowURL),
+  //   axios.get(remoteOkURL),
+  // ]);
+
+   const [arbeitRes, remoteRes] = await Promise.all([
+    axios.get(arbeitnowURL).catch(e => ({ data: { data: [] }, _err: e })),
+    axios.get(remoteOkURL).catch(e => ({ data: [], _err: e }))
   ]);
+
+  if (arbeitRes._err) console.error('Arbeitnow fetch error:', arbeitRes._err.message);
+  if (remoteRes._err) console.error('RemoteOK fetch error:', remoteRes._err.message);
 
   const arbeitJobs = arbeitRes.data.data.map(job => ({
     role: job.title || 'N/A',
@@ -518,12 +526,12 @@ function scoreJobs(jobs, keywords) {
 }
 
 app.get('/healthz', (req, res) => res.status(200).send('OK'));
-const [arbeitRes, remoteRes] = await Promise.all([
-  axios.get(arbeitnowURL).catch(e => ({ data: { data: [] }, _err: e })),
-  axios.get(remoteOkURL).catch(e => ({ data: [], _err: e }))
-]);
-if (arbeitRes._err) console.error('Arbeitnow fetch error:', arbeitRes._err.message);
-if (remoteRes._err) console.error('RemoteOK fetch error:', remoteRes._err.message);
+// const [arbeitRes, remoteRes] = await Promise.all([
+//   axios.get(arbeitnowURL).catch(e => ({ data: { data: [] }, _err: e })),
+//   axios.get(remoteOkURL).catch(e => ({ data: [], _err: e }))
+// ]);
+// if (arbeitRes._err) console.error('Arbeitnow fetch error:', arbeitRes._err.message);
+// if (remoteRes._err) console.error('RemoteOK fetch error:', remoteRes._err.message);
 
 
 // ===================== Start Server ========================
