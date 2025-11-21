@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const BACKEND_URL = "https://ats-resume-analyzer-qqw1.onrender.com";
-
+ 
 
   const forms = [
     "signup-form", "login-form",
@@ -156,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
  });
 
 //  ==============================authentication-end======================================================
-
+ const BACKEND_URL = "https://ats-resume-analyzer-qqw1.onrender.com";
 // ===================== container 1 code start ========================  
 const uploadBox = document.getElementById('uploadBox');
 const resumeInput = document.getElementById('resumeInput');
