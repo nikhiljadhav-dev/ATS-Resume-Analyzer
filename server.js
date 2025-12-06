@@ -207,7 +207,7 @@ app.use(express.json());
 
 const allowedOrigins = [
   "https://ats-resume-analyzer-pi.vercel.app",
-  "http://localhost:3000"
+  // "http://localhost:3000"
 ];
 
 app.use(cors({
